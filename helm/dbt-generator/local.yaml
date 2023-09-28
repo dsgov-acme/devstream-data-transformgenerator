@@ -1,0 +1,6 @@
+image:
+  pullPolicy: "IfNotPresent"
+  repository: "document-management"
+  tag: "latest"
+
+cronString: 0 8 * * * # Source: https://crontab.guru/every-day-8am

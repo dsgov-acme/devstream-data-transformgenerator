@@ -1,0 +1,13 @@
+ds_gov_dbt:
+  target: dev
+  outputs:
+    dev:
+      job_execution_timeout_seconds: 300
+      job_retries: 3
+      location: US
+      method: oauth # This will automatically use a service account in GCP for authentication to BigQuery
+      priority: interactive
+      project: "{{ env_var('DBT_PROJECT', 'dsgov-dev') }}" # Setting this from Helm chart instead since it will vary
+      dataset: "{{ env_var('DBT_DATASET', 'work_manager_cloudsql') }}" # Setting this from Helm chart instead since it will vary
+      threads: 8
+      type: bigquery

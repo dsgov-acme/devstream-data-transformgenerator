@@ -1,0 +1,32 @@
+timeout: 1800s
+logsBucket: "gs://${_ARTIFACT_BUCKET_NAME}/cloudbuild-logs/app-${_SERVICE_NAME}-pull-request-trigger"
+options:
+  machineType: 'E2_HIGHCPU_8'
+steps:
+  - id: 'Build Docker Image'
+    name: 'gcr.io/cloud-builders/docker'
+    entrypoint: bash
+    args:
+      - "-c"
+      - |
+        docker build .
+
+  - id: 'Skaffold Render - Minikube'
+    name: "${_GAR_BUILDER_URL}/helm"
+    entrypoint: bash
+    args:
+      - "-c"
+      - |
+        # Pass "--digest-source=tag" to avoid image resolution errors
+        # Ref: https://github.com/GoogleContainerTools/skaffold/issues/6941#issuecomment-988436514
+        skaffold render -p minikube --digest-source=tag
+
+  - id: 'Skaffold Render - Dev (GKE)'
+    name: "${_GAR_BUILDER_URL}/helm"
+    entrypoint: bash
+    args:
+      - "-c"
+      - |
+        # Pass "--digest-source=tag" to avoid image resolution errors
+        # Ref: https://github.com/GoogleContainerTools/skaffold/issues/6941#issuecomment-988436514
+        skaffold render -p dev --digest-source=tag
