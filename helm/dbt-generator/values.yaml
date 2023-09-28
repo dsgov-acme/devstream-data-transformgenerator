@@ -1,0 +1,17 @@
+namespace: "devstream"
+
+image:
+  repository: us-east4-docker.pkg.dev/devstream-services/application/devstream-dbt-generator
+  pullPolicy: Always
+  tag: latest
+
+env:
+  DBTGENERATOR_ENABLED: true
+  DATASET_NAME: work_manager_cloudsql
+  SCHEMA_TABLE_NAME: public_dynamic_schema
+  TRANSACTION_TABLE_NAME: public_transaction
+
+# Source: https://crontab.guru/#*/30_*_*_*_1-5
+# NOTE: In practice, this will vary pending business requirements.
+# We have it set for every 30 mins on weekdays for development velocity.
+cronString: "*/30 * * * 1-5"

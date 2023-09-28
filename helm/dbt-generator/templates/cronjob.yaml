@@ -1,0 +1,24 @@
+# malware database updater
+{{- if .Values.env.DBTGENERATOR_ENABLED }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: dbt-generator
+  namespace: {{ .Values.namespace | default "dsgov" }}
+spec:
+  schedule: "{{ .Values.cronString }}"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: dbt-generator
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              imagePullPolicy: "{{ .Values.image.pullPolicy}}"
+              env:
+                - name: ENV
+                  value: {{ default "dev" .Values.environment | quote }}
+                {{- include "env.tpl" .Values.env | indent 16 }}
+          restartPolicy: OnFailure
+{{- end }}

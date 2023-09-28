@@ -1,0 +1,114 @@
+apiVersion: skaffold/v4beta1
+kind: Config
+metadata:
+  name: data-transformgenerator
+profiles:
+  - name: local
+    build:
+      googleCloudBuild:
+        projectId: devstream-services
+        dockerImage: gcr.io/cloud-builders/docker
+      artifacts:
+        - image: us-east4-docker.pkg.dev/devstream-services/application/devstream-data-transformgenerator
+          docker:
+            dockerfile: Dockerfile
+    deploy:
+      helm:
+        releases:
+        - name: devstream-data-transformgenerator
+          chartPath: helm/dbt-generator
+          # Ref: https://skaffold.dev/docs/deployers/helm/#sanitizing-the-artifact-name-from-invalid-go-template-characters
+          setValueTemplates:
+            image.repository: "{{.IMAGE_REPO_us_east4_docker_pkg_dev_devstream_services_application_devstream_data_transformgenerator}}"
+            image.tag: "{{.IMAGE_TAG_us_east4_docker_pkg_dev_devstream_services_application_devstream_data_transformgenerator}}@{{.IMAGE_DIGEST_us_east4_docker_pkg_dev_devstream_services_application_devstream_data_transformgenerator}}"
+          valuesFiles:
+            - helm/dbt-generator/values.yaml
+            - helm/dbt-generator/local.yaml
+  - name: minikube
+    activation:
+      - kubeContext: minikube
+    build:
+      artifacts:
+        - image: dbt-generator
+          docker:
+            dockerfile: Dockerfile
+    manifests:
+      helm:
+        releases:
+          - name: dbt-generator
+            chartPath: helm/dbt-generator
+            valuesFiles:
+              - helm/dbt-generator/values.yaml
+              - helm/dbt-generator/local.yaml
+            setValues:
+              environment: local
+              pullPolicy: IfNotPresent
+              postgres.enabled: "true"
+            setValueTemplates:
+              image.repository: dbt-generator
+              image.tag: dbt-generator
+    deploy:
+      helm: {}
+  - name: dev
+    build:
+      googleCloudBuild:
+        projectId: devstream-services
+        dockerImage: gcr.io/cloud-builders/docker
+      artifacts:
+        - image: us-east4-docker.pkg.dev/devstream-services/application/devstream-data-transformgenerator
+          docker:
+            dockerfile: Dockerfile
+    deploy:
+      helm:
+        releases:
+        - name: devstream-data-transformgenerator
+          chartPath: helm/dbt-generator
+          # Ref: https://skaffold.dev/docs/deployers/helm/#sanitizing-the-artifact-name-from-invalid-go-template-characters
+          setValueTemplates:
+            image.repository: "{{.IMAGE_REPO_us_east4_docker_pkg_dev_devstream_services_application_devstream_data_transformgenerator}}"
+            image.tag: "{{.IMAGE_TAG_us_east4_docker_pkg_dev_devstream_services_application_devstream_data_transformgenerator}}@{{.IMAGE_DIGEST_us_east4_docker_pkg_dev_devstream_services_application_devstream_data_transformgenerator}}"
+          valuesFiles:
+            - helm/dbt-generator/values.yaml
+            - helm/dbt-generator/dev.yaml
+  - name: staging
+    build:
+      googleCloudBuild:
+        projectId: devstream-services
+        dockerImage: gcr.io/cloud-builders/docker
+      artifacts:
+        - image: us-east4-docker.pkg.dev/devstream-services/application/devstream-data-transformgenerator
+          docker:
+            dockerfile: Dockerfile
+    deploy:
+      helm:
+        releases:
+        - name: devstream-data-transformgenerator
+          chartPath: helm/dbt-generator
+          # Ref: https://skaffold.dev/docs/deployers/helm/#sanitizing-the-artifact-name-from-invalid-go-template-characters
+          setValueTemplates:
+            image.repository: "{{.IMAGE_REPO_us_east4_docker_pkg_dev_devstream_services_application_devstream_data_transformgenerator}}"
+            image.tag: "{{.IMAGE_TAG_us_east4_docker_pkg_dev_devstream_services_application_devstream_data_transformgenerator}}@{{.IMAGE_DIGEST_us_east4_docker_pkg_dev_devstream_services_application_devstream_data_transformgenerator}}"
+          valuesFiles:
+            - helm/dbt-generator/values.yaml
+            - helm/dbt-generator/staging.yaml
+  - name: prod
+    build:
+      googleCloudBuild:
+        projectId: devstream-services
+        dockerImage: gcr.io/cloud-builders/docker
+      artifacts:
+        - image: us-east4-docker.pkg.dev/devstream-services/application/devstream-data-transformgenerator
+          docker:
+            dockerfile: Dockerfile
+    deploy:
+      helm:
+        releases:
+        - name: devstream-data-transformgenerator
+          chartPath: helm/dbt-generator
+          # Ref: https://skaffold.dev/docs/deployers/helm/#sanitizing-the-artifact-name-from-invalid-go-template-characters
+          setValueTemplates:
+            image.repository: "{{.IMAGE_REPO_us_east4_docker_pkg_dev_devstream_services_application_devstream_data_transformgenerator}}"
+            image.tag: "{{.IMAGE_TAG_us_east4_docker_pkg_dev_devstream_services_application_devstream_data_transformgenerator}}@{{.IMAGE_DIGEST_us_east4_docker_pkg_dev_devstream_services_application_devstream_data_transformgenerator}}"
+          valuesFiles:
+            - helm/dbt-generator/values.yaml
+            - helm/dbt-generator/prod.yaml
